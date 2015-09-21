@@ -12,7 +12,7 @@ set(dir_includes    "${CMAKE_CURRENT_SOURCE_DIR}/../inc/") # 包含路径
 
 set(compiler_type   "")                         # 编译器类型，可为空
 set(compiler_opts   "-Wall -O2")                # 编译选项
-set(compiler_defs   )                           # 宏, e.g.: DEBUG=1
+set(compiler_defs   )                           # 宏
 
 set(source_types    "*.c" "*.cpp" "*.s")        # 源文件类型
 set(source_libraries )                          # 库文件
