@@ -20,17 +20,37 @@ set(source_filter   )                           # 源文件过滤，支持通配
 
 ###############################################################################}
 #### Items configuration {    #### 各项目配置选项，可对通用配置进行重定义或补充
-macro(demo1 type)                               # 模板项目1配置
+macro(lib_debug type)                               # Debug库
     if(${type} STREQUAL "config")
-        set(name_target "temp_item_1")
+        set(name_target     "lib_debug")
+        set(compiler_defs   "${compiler_defs} -DDS_DEBUG_MAIN=1")
+    elseif(${type} STREQUAL "target")
+        add_library(debug   ${SRC_FILES})
+        add_custom_command( OUTPUT libfiles
+            COMMAND         cp -f ${dir_sources}debug.h ${dir_outputs}libdebug.h
+            COMMAND         cp -f ${dir_outputs}/*.a ${dir_libraries}
+            COMMAND         cp -f ${dir_outputs}/*.h ${dir_includes}
+            )
+        add_custom_target(lib ALL DEPENDS libfiles)
+    endif()
+endmacro(lib_debug)
+
+macro(test_debug type)                               # Debug库
+    if(${type} STREQUAL     "config")
+        set(name_target     "test_debug")
+        set(compiler_defs   "${compiler_defs} -DDS_DEBUG_MAIN=1 -DDBG_MODULE_TEST=1")
+        set(dir_sources     "${CMAKE_CURRENT_SOURCE_DIR}/../test/")
+        set(source_libraries    "-ldebug")
     elseif(${type} STREQUAL "target")
         add_executable(${name_target} ${SRC_FILES})
     endif()
-endmacro(demo1)
+endmacro(test_debug)
 
 macro(item_list type) # 项目列表，根据配置参数ITEM选择: $ cmake -DITEM=x;
-    if(ITEM STREQUAL "temp_item_1")
-        demo1(${type})
+    if(ITEM STREQUAL "lib")
+        lib_debug(${type})
+    elseif(ITEM STREQUAL "test")
+        test_debug(${type})
     else()
         message(FATAL_ERROR "No such ITEM in `CMakeLists.txt`: ${ITEM}")
     endif()
