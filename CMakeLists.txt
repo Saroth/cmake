@@ -22,11 +22,11 @@ set(source_filter   )                           # 源文件过滤，支持通配
 #### Items configuration {    #### 各项目配置选项，可对通用配置进行重定义或补充
 macro(lib_debug type)                               # Debug库
     if(${type} STREQUAL "config")
-        set(name_target     "lib_debug")
+        set(name_target     "debug")                # 项目名
         set(compiler_defs   "${compiler_defs} -DDS_DEBUG_MAIN=1")
     elseif(${type} STREQUAL "target")
-        add_library(debug   ${SRC_FILES})
-        add_custom_command( OUTPUT libfiles
+        add_library(${name_target}  ${SRC_FILES})   # 添加编译目标
+        add_custom_command( OUTPUT libfiles         # 复制目标文件和头文件
             COMMAND         cp -f ${dir_sources}debug.h ${dir_outputs}libdebug.h
             COMMAND         cp -f ${dir_outputs}/*.a ${dir_libraries}
             COMMAND         cp -f ${dir_outputs}/*.h ${dir_includes}
@@ -35,12 +35,12 @@ macro(lib_debug type)                               # Debug库
     endif()
 endmacro(lib_debug)
 
-macro(test_debug type)                               # Debug库
+macro(test_debug type)                              # Debug模块测试程序
     if(${type} STREQUAL     "config")
-        set(name_target     "test_debug")
+        set(name_target     "test_debug")           # 项目名
         set(compiler_defs   "${compiler_defs} -DDS_DEBUG_MAIN=1 -DDBG_MODULE_TEST=1")
-        set(dir_sources     "${CMAKE_CURRENT_SOURCE_DIR}/../test/")
-        set(source_libraries    "-ldebug")
+        set(dir_sources     "${CMAKE_CURRENT_SOURCE_DIR}/../test/") # 重设源目录
+        set(source_libraries    "-ldebug")          # 添加库
     elseif(${type} STREQUAL "target")
         add_executable(${name_target} ${SRC_FILES})
     endif()
