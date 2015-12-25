@@ -38,9 +38,12 @@ endmacro(lib_debug)
 macro(test_debug type)                              # Debug模块测试程序
     if(${type} STREQUAL     "config")
         set(name_target     "test_debug")           # 项目名
-        set(compiler_defs   "${compiler_defs} -DDS_DEBUG_MAIN=1 -DDBG_MODULE_TEST=1")
+        set(compiler_defs   "${compiler_defs}\
+        -DDS_DEBUG_MAIN=1 -DDBG_MODULE_TEST=1")     # 定义测试宏
         set(dir_sources     "${CMAKE_CURRENT_SOURCE_DIR}/../test/") # 重设源目录
         set(source_libraries    "-ldebug")          # 添加库
+        set(compiler_linker_flags "${compiler_linker_flags}\
+        -nostartfiles -e __entry_test_debug__")     # 添加入口设置选项
     elseif(${type} STREQUAL "target")
         add_executable(${name_target} ${SRC_FILES})
     endif()
