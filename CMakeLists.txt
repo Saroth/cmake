@@ -49,7 +49,8 @@ macro(test_debug type)                              # Debug模块测试程序
     endif()
 endmacro(test_debug)
 
-macro(item_list type) # 项目列表，根据配置参数ITEM选择: $ cmake -DITEM=x;
+# 项目列表，根据配置参数ITEM选择: $ cmake -DITEM=x;
+macro(item_list type)
     if(ITEM STREQUAL "LIBDEBUG")
         lib_debug(${type})
     elseif(ITEM STREQUAL "LIBTEST")
@@ -118,10 +119,10 @@ endmacro(find_resource)
 ###############################################################################}
 #### [FIX] Process {                            #### 配置处理流程
 load_compiler_config()                          # 加载默认编译器配置
-item_list("config")                             # 选择项目配置
+item_list("config")                             # 加载项目配置
 set_compile_options()                           # 根据项目配置设置编译选项
 find_resource()                                 # 根据项目配置加载源文件
-item_list("target")                             # 选择项目编译目标
+item_list("target")                             # 加载项目编译目标配置
 
 ###############################################################################}
 #### [FIX] Debug switchs {                      #### CMake配置调试控制
