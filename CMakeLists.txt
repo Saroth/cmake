@@ -29,7 +29,7 @@ macro(lib_debug type)                               # Debug库
         add_custom_command( OUTPUT libfiles         # 复制目标文件和头文件
             COMMAND         cp -f ${dir_sources}debug.h ${dir_outputs}libdebug.h
             COMMAND         cp -f ${dir_outputs}/*.a ${dir_libraries}
-            COMMAND         cp -f ${dir_outputs}/*.h ${dir_includes}
+            COMMAND         cp -f ${dir_outputs}/libdebug.h ${dir_includes}
             )
         add_custom_target(lib ALL DEPENDS libfiles)
     endif()
@@ -50,9 +50,9 @@ macro(test_debug type)                              # Debug模块测试程序
 endmacro(test_debug)
 
 macro(item_list type) # 项目列表，根据配置参数ITEM选择: $ cmake -DITEM=x;
-    if(ITEM STREQUAL "lib")
+    if(ITEM STREQUAL "LIBDEBUG")
         lib_debug(${type})
-    elseif(ITEM STREQUAL "test")
+    elseif(ITEM STREQUAL "LIBTEST")
         test_debug(${type})
     else()
         message(FATAL_ERROR "No such ITEM in `CMakeLists.txt`: ${ITEM}")
