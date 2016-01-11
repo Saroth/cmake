@@ -20,7 +20,7 @@ set(source_filter   )                           # 源文件过滤，支持通配
 
 ###############################################################################}
 #### Items configuration {    #### 各项目配置选项，可对通用配置进行重定义或补充
-macro(demo1 type)                               # 模板项目1配置
+macro(demo1 type)                               # 模板项目`demo1`配置
     if(${type} STREQUAL "config")
         set(name_target "temp_item_1")
     elseif(${type} STREQUAL "target")
@@ -28,9 +28,10 @@ macro(demo1 type)                               # 模板项目1配置
     endif()
 endmacro(demo1)
 
-macro(item_list type) # 项目列表，根据配置参数ITEM选择: $ cmake -DITEM=x;
-    if(ITEM STREQUAL "temp_item_1")
-        demo1(${type})
+# 项目列表，根据配置参数ITEM选择: $ cmake -DITEM=x;
+macro(item_list type)
+    if(ITEM STREQUAL "demo1")
+        demo1(${type})                          # 加载项目`demo1`配置
     else()
         message(FATAL_ERROR "No such ITEM in `CMakeLists.txt`: ${ITEM}")
     endif()
@@ -95,10 +96,10 @@ endmacro(find_resource)
 ###############################################################################}
 #### [FIX] Process {                            #### 配置处理流程
 load_compiler_config()                          # 加载默认编译器配置
-item_list("config")                             # 选择项目配置
+item_list("config")                             # 加载项目配置
 set_compile_options()                           # 根据项目配置设置编译选项
 find_resource()                                 # 根据项目配置加载源文件
-item_list("target")                             # 选择项目编译目标
+item_list("target")                             # 加载项目编译目标配置
 
 ###############################################################################}
 #### [FIX] Debug switchs {                      #### CMake配置调试控制

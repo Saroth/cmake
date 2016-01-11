@@ -3,18 +3,45 @@
 # Usage:
 #       $ ./iteminit.sh <item>
 
-if [ ! $# -eq 1 ]
-then
+# 显示帮助说明
+function print_help {
+    echo -e "Usage: $ ./iteminit.sh <item>"
+    echo -e "Avaliable items:"
+    for item in ${items}; do
+        echo -e "\t> "${item}
+    done
+    exit
+}
+# 初始化
+function init_item_dir {
+    curpath=$(cd $(dirname $1); pwd)
+    objpath=${curpath}/../${2}
+    if [ ! -d ${objpath} ]; then
+        echo mkdir: ${objpath}
+        mkdir ${objpath}
+    fi
+    cd ${objpath}
+    cmake -DITEM=${2} ${curpath}
+    exit
+}
+
+# 搜索CmakeLists.txt中的项目
+items=$(
+sed -n 's/^macro([ ]*\(.*\) .*).*$/\1/p' ./CMakeLists.txt |
+grep -v item_list
+)
+if [ ! $# -eq 1 ]; then
     echo -e "Param error!"
     exit
 fi
-curpath=$(cd $(dirname $0); pwd)
-objpath=${curpath}/../${1}
-if [ ! -d ${objpath} ]
-then
-    echo mkdir: ${objpath}
-    mkdir ${objpath}
+if [[ $1 == "-h" || $1 == "--help" ]]; then
+    print_help
 fi
-cd ${objpath}
-cmake -DITEM=${1} ${curpath}
+for item in ${items}; do
+    if [[ $1 == ${item} ]]; then
+        init_item_dir $0 $1
+    fi
+done
+echo -e "No such item: $1"
+print_help
 
