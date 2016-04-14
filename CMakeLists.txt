@@ -2,18 +2,36 @@ cmake_minimum_required(VERSION 2.6)             # 最低CMake版本
 
 ###############################################################################
 #### Default configuration {                    #### 工程通用配置选项
-set(name_project    "CMAKE_TEMPLATE")           # 工程名
-set(name_target     "template")                 # 目标名
+set(name_project    "LIBSSL")                   # 工程名
+set(name_target     "libssl.a")                 # 目标名
 
-set(dir_sources     "${CMAKE_CURRENT_SOURCE_DIR}/../src/") # 源路径
+set(dir_sources     "${CMAKE_CURRENT_SOURCE_DIR}/../src/"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../openssl/"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../mbedtls/"
+    )                                           # 源路径
 set(dir_outputs     "${CMAKE_CURRENT_SOURCE_DIR}/../${ITEM}/") # 目标路径
 set(dir_libraries   "${CMAKE_CURRENT_SOURCE_DIR}/../lib/") # 库路径
-set(dir_includes    "${CMAKE_CURRENT_SOURCE_DIR}/../inc/") # 包含路径
+set(dir_includes    
+    "${CMAKE_CURRENT_SOURCE_DIR}/../inc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../src/openssl"
+    )                                           # 包含路径
 
-set(compiler_type   "")                         # 编译器类型，可为空
-set(compiler_opts   "-Wall -O2")                # 编译选项
+set(compiler_type   "arm-elf-")                 # 编译器类型，可为空
+set(compiler_opts   "\
+-Wall -O1 \
+-mcpu=arm9tdmi \
+-mlittle-endian -msoft-float \
+-mthumb-interwork \
+-ffunction-sections \
+")                                              # 编译选项
 set(compiler_defs   )                           # 宏
-set(compiler_linker_flags )                     # 链接选项
+set(compiler_linker_flags "\
+-static \
+-nostartfiles \
+-mthumb-interwork \
+-Ttext 0x20000000 \
+-Wl,-T../make/arm926_gcc.ld,-Map,Ctrl.map,--gc-sections,--cref \
+")                                              # 链接选项
 
 set(source_types    "*.c" "*.cpp" "*.s")        # 源文件类型
 set(source_libraries )                          # 库文件
@@ -21,18 +39,162 @@ set(source_filter   )                           # 源文件过滤，支持通配
 
 ###############################################################################}
 #### Items configuration {    #### 各项目配置选项，可对通用配置进行重定义或补充
-macro(demo1 type)                               # 模板项目`demo1`配置
+macro(libmbedtls type)                         # 项目:MbedTLS库
     if(${type} STREQUAL "config")
-        set(name_target "temp_item_1")
+        set(name_target "mbedtls")
+        set(source_filter   ${source_filter}
+            "../openssl/*"
+            "../src/openssl/*"
+            "../mbedtls/programs/*"
+            "../mbedtls/tests/*"
+            "../mbedtls/visualc/*"
+            "../mbedtls/yotta/*"
+            )
     elseif(${type} STREQUAL "target")
-        add_executable(${name_target} ${SRC_FILES})
+        add_library(${name_target} ${SRC_FILES})
     endif()
-endmacro(demo1)
+endmacro(libmbedtls)
+
+macro(libopenssl_ssl type)                     # 项目:OpenSSL SSL库
+    if(${type} STREQUAL "config")
+        set(name_target "openssl_ssl")
+        set(source_filter   ${source_filter}
+            "../mbedtls/*"
+            "../src/openssl/*"
+
+            "../openssl/apps/*"
+            "../openssl/bugs/*"
+            "../openssl/demos/*"
+            "../openssl/engines/*"
+            "../openssl/MacOS/*"
+            "../openssl/ms/*"
+            "../openssl/test/*"
+            "../openssl/crypto/*"
+
+            "../openssl/ssl/clienthellotest.c"
+            "../openssl/ssl/heartbeat_test.c"
+            "../openssl/ssl/ssl_task.c"
+            "../openssl/ssl/ssltest.c"
+            "../openssl/ssl/sslv2conftest.c"
+            )
+    elseif(${type} STREQUAL "target")
+        add_library(${name_target} ${SRC_FILES})
+    endif()
+endmacro(libopenssl_ssl)
+
+macro(libopenssl_crypto type)                     # 项目:OpenSSL Crypto库
+    if(${type} STREQUAL "config")
+        set(name_target "openssl_crypto")
+        set(source_filter   ${source_filter}
+            "../mbedtls/*"
+
+            "../openssl/apps/*"
+            "../openssl/bugs/*"
+            "../openssl/demos/*"
+            "../openssl/engines/*"
+            "../openssl/MacOS/*"
+            "../openssl/ms/*"
+            "../openssl/test/*"
+            "../openssl/ssl/*"
+
+            "../openssl/crypto/mdc2/*"
+            "../openssl/crypto/threads/*"
+            "../openssl/crypto/cast/*"
+            "../openssl/crypto/perlasm/*"
+            "../openssl/crypto/ripemd/*"
+            "../openssl/crypto/jpake/*"
+            "../openssl/crypto/whrlpool/*"
+            "../openssl/crypto/dso/*"
+            "../openssl/crypto/dsa/*"
+            "../openssl/crypto/dh/*"
+            "../openssl/crypto/rc5/*"
+            "../openssl/crypto/rc4/*"
+            "../openssl/crypto/rc2/*"
+            "../openssl/crypto/engine/*"
+            "../openssl/crypto/camellia/*"
+            "../openssl/crypto/md4/*"
+            "../openssl/crypto/md2/*"
+            "../openssl/crypto/idea/*"
+            "../openssl/crypto/srp/*"
+            "../openssl/crypto/comp/*"
+            "../openssl/crypto/bf/*"
+            "../openssl/crypto/cms/*"
+            "../openssl/crypto/des/*"
+            "../openssl/crypto/seed/*"
+            "../openssl/crypto/store/*"
+            "../openssl/crypto/ui/*"
+            "../openssl/crypto/txt_db/*"
+            "../openssl/crypto/bn/asm/*"
+
+            "../openssl/crypto/constant_time_test.c"
+            "../openssl/crypto/uid.c"
+            "../openssl/crypto/ia64cpuid.S"
+            "../openssl/crypto/fips_ers.c"
+            "../openssl/crypto/cpt_err.c"
+            "../openssl/crypto/armv4cpuid.S"
+            "../openssl/crypto/armcap.c"
+            "../openssl/crypto/s390xcap.c"
+            "../openssl/crypto/ppccap.c"
+            "../openssl/crypto/o_dir_test.c"
+            "../openssl/crypto/o_str.c"
+            "../openssl/crypto/sparcv9cap.c"
+            "../openssl/crypto/LPdir_wince.c"
+            "../openssl/crypto/LPdir_win32.c"
+            "../openssl/crypto/LPdir_win.c"
+            "../openssl/crypto/LPdir_vms.c"
+            "../openssl/crypto/LPdir_unix.c"
+            "../openssl/crypto/LPdir_nyi.c"
+
+            "../openssl/crypto/sha/sha1test.c"
+            "../openssl/crypto/sha/shatest.c"
+            "../openssl/crypto/bio/bss_rtcp.c"
+            "../openssl/crypto/bio/bss_file.c"
+            "../openssl/crypto/hmac/hmactest.c"
+            "../openssl/crypto/md5/md5test.c"
+            "../openssl/crypto/md5/md5s.cpp"
+            "../openssl/crypto/rsa/rsa_test.c"
+            "../openssl/crypto/bn/exp.c"
+            "../openssl/crypto/bn/bnspeed.c"
+            "../openssl/crypto/bn/exptest.c"
+            "../openssl/crypto/bn/divtest.c"
+            "../openssl/crypto/ec/ectest.c"
+            "../openssl/crypto/ec/ecp_nistz256_table.c"
+            "../openssl/crypto/ecdh/ecdhtest.c"
+            "../openssl/crypto/err/err_all.c"
+            "../openssl/crypto/evp/evp_key.c"
+            "../openssl/crypto/evp/evp_test.c"
+            "../openssl/crypto/evp/e_dsa.c"
+            "../openssl/crypto/pkcs7/pk7_enc.c"
+            "../openssl/crypto/pkcs7/bio_pk7.c"
+            "../openssl/crypto/pqueue/pq_test.c"
+            "../openssl/crypto/rand/randtest.c"
+            "../openssl/crypto/rand/rand_nw.c"
+            "../openssl/crypto/rand/rand_win.c"
+            "../openssl/crypto/rand/rand_vms.c"
+            "../openssl/crypto/rand/rand_unix.c"
+            "../openssl/crypto/rand/rand_os2.c"
+            "../openssl/crypto/rand/rand_egd.c"
+            "../openssl/crypto/lhash/lh_test.c"
+            "../openssl/crypto/conf/test.c"
+            "../openssl/crypto/conf/cnf_save.c"
+            "../openssl/crypto/x509v3/v3nametest.c"
+            "../openssl/crypto/x509v3/v3conf.c"
+            "../openssl/crypto/x509v3/v3prin.c"
+            "../openssl/crypto/x509v3/tabtest.c"
+            )
+    elseif(${type} STREQUAL "target")
+        add_library(${name_target} ${SRC_FILES})
+    endif()
+endmacro(libopenssl_crypto)
 
 # 项目列表，根据配置参数ITEM选择: $ cmake -DITEM=x;
 macro(item_list type)
-    if(ITEM STREQUAL "demo1")
-        demo1(${type})                          # 加载项目`demo1`配置
+    if(ITEM STREQUAL "build/libmbedtls")
+        libmbedtls(${type})                    # 加载项目`libmbedtls`配置
+    elseif(ITEM STREQUAL "build/libopenssl_ssl")
+        libopenssl_ssl(${type})                # 加载项目`libopenssl_ssl`配置
+    elseif(ITEM STREQUAL "build/libopenssl_crypto")
+        libopenssl_crypto(${type})             # 加载项目`libopenssl_crypto`配置
     else()
         message(FATAL_ERROR "No such ITEM in `CMakeLists.txt`: ${ITEM}")
     endif()
