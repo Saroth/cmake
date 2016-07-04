@@ -6,13 +6,14 @@ set(name_project    "CMAKE_TEMPLATE")           # 工程名
 set(name_target     "template")                 # 目标名
 
 set(dir_sources     "${CMAKE_CURRENT_SOURCE_DIR}/../src/") # 源路径
-set(dir_outputs     "${CMAKE_CURRENT_SOURCE_DIR}/../build/") # 目标路径
+set(dir_outputs     "${CMAKE_CURRENT_SOURCE_DIR}/../${ITEM}/") # 目标路径
 set(dir_libraries   "${CMAKE_CURRENT_SOURCE_DIR}/../lib/") # 库路径
 set(dir_includes    "${CMAKE_CURRENT_SOURCE_DIR}/../inc/") # 包含路径
 
 set(compiler_type   "")                         # 编译器类型，可为空
 set(compiler_opts   "-Wall -O2")                # 编译选项
 set(compiler_defs   )                           # 宏
+set(compiler_linker_flags )                     # 链接选项
 
 set(source_types    "*.c" "*.cpp" "*.s")        # 源文件类型
 set(source_libraries )                          # 库文件
@@ -47,7 +48,6 @@ macro(load_compiler_config)                     # 加载编译器配置
     set(compiler_cpp_flags "${compiler_opts}")  # C++编译选项
     set(compiler_asm    "${compiler_type}gcc")  # 汇编编译器
     set(compiler_asm_flags "${compiler_opts}")  # 汇编编译选项
-    set(compiler_linker_flags )                 # 链接选项
     set(compiler_archive "${compiler_type}ar")  # 库编译器
     set(compiler_archive_flags "cvr")           # 库编译选项
     set(compiler_strip  "${compiler_type}strip") # 目标裁剪器

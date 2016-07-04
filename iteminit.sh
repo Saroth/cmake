@@ -32,9 +32,6 @@ grep -v item_list
 )
 if [ ! $# -eq 1 ]; then
     echo -e "Param error!"
-    exit
-fi
-if [[ $1 == "-h" || $1 == "--help" ]]; then
     print_help
 fi
 for item in ${items}; do
