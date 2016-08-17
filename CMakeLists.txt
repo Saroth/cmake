@@ -32,6 +32,7 @@ set(compiler_linker_flags "\
 -Ttext 0x20000000 \
 -Wl,-T../make/arm926_gcc.ld,-Map,Ctrl.map,--gc-sections,--cref \
 ")                                              # 链接选项
+set(compiler_linker_flags )                     # 链接选项
 
 set(source_types    "*.c" "*.cpp" "*.s")        # 源文件类型
 set(source_libraries )                          # 库文件
