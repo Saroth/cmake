@@ -18,7 +18,7 @@ function init_item_dir {
     objpath=${curpath}/../${2}
     if [ ! -d ${objpath} ]; then
         echo mkdir: ${objpath}
-        mkdir ${objpath}
+        mkdir -p ${objpath}
     fi
     cd ${objpath}
     cmake -DITEM=${2} ${curpath}
@@ -27,7 +27,7 @@ function init_item_dir {
 
 # 搜索CmakeLists.txt中的项目
 items=$(
-sed -n 's/^macro([ ]*\(.*\) .*).*$/\1/p' ./CMakeLists.txt |
+sed -n 's/.*if\s*(\s*ITEM\s*STREQUAL\s*\"\(.*\)\"\s*).*/\1/p' ./CMakeLists.txt |
 grep -v item_list
 )
 if [ ! $# -eq 1 ]; then
