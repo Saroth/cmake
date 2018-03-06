@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.6)             # 最低CMake版本
 
 ###############################################################################
 #### Default configuration {                    #### 工程通用配置选项
-set(name_project    "LIBSSL")                   # 工程名
-set(name_target     "libssl.a")                 # 目标名
+set(name_project    "LIBTLS")                   # 工程名
+set(name_target     "libtls.a")                 # 目标名
 
 set(dir_sources     "${CMAKE_CURRENT_SOURCE_DIR}/../src/"
     "${CMAKE_CURRENT_SOURCE_DIR}/../openssl/"
@@ -16,22 +16,14 @@ set(dir_includes
     "${CMAKE_CURRENT_SOURCE_DIR}/../src/openssl"
     )                                           # 包含路径
 
-set(compiler_type   "arm-elf-")                 # 编译器类型，可为空
+set(compiler_type   "arm-none-eabi-")           # 编译器类型，可为空
 set(compiler_opts   "\
--Wall -O1 \
--mcpu=arm9tdmi \
--mlittle-endian -msoft-float \
--mthumb-interwork \
--ffunction-sections \
+-Wall -Os \
+-mabi=aapcs -mcpu=arm926ej-s -msoft-float \
+-mthumb -mthumb-interwork \
+-fdata-sections -ffunction-sections \
 ")                                              # 编译选项
 set(compiler_defs   )                           # 宏
-set(compiler_linker_flags "\
--static \
--nostartfiles \
--mthumb-interwork \
--Ttext 0x20000000 \
--Wl,-T../make/arm926_gcc.ld,-Map,Ctrl.map,--gc-sections,--cref \
-")                                              # 链接选项
 set(compiler_linker_flags )                     # 链接选项
 
 set(source_types    "*.c" "*.cpp" "*.s")        # 源文件类型
