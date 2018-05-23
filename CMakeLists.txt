@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.6)             # 最低CMake版本
 
 ###############################################################################
 #### Default configuration {                    #### 工程通用配置选项
-set(name_project    "CMAKE_TEMPLATE")           # 工程名
-set(name_target     "template")                 # 目标名
+set(name_project    "TEST_QT")           # 工程名
+set(name_target     "test")                 # 目标名
 
 set(dir_sources     "${CMAKE_CURRENT_SOURCE_DIR}/../src/") # 源路径
 set(dir_outputs     "${CMAKE_CURRENT_SOURCE_DIR}/../${ITEM}/") # 目标路径
@@ -21,18 +21,29 @@ set(source_filter   )                           # 源文件过滤，支持通配
 
 ###############################################################################}
 #### Items configuration {    #### 各项目配置选项，可对通用配置进行重定义或补充
-macro(demo1 type)                               # 模板项目`demo1`配置
+macro(test1 type)
     if(${type} STREQUAL "config")
-        set(name_target "temp_item_1")
+        set(name_target "test1")
+        # set(CMAKE_INCLUDE_CURRENT_DIR ON)
+        set(CMAKE_AUTOMOC ON)       # Necessary!
     elseif(${type} STREQUAL "target")
+        # DON'T call FIND_* modules before setting a name to PROJECT.
+        #   See: https://cmake.org/Bug/view.php?id=15999
+        # In order for find_package to be successful, Qt 5 must be found below
+        # the CMAKE_PREFIX_PATH, or the Qt5<Module>_DIR must be set in the
+        # CMake cache to the location of the Qt5WidgetsConfig.cmake file.
+        #   Local setting is: /usr/lib64/cmake
+        #   See: http://doc.qt.io/qt-5/cmake-manual.html#getting-started
+        find_package(Qt5 REQUIRED Widgets Core Gui)
         add_executable(${name_target} ${SRC_FILES})
+        target_link_libraries(${name_target} Qt5::Widgets Qt5::Core Qt5::Gui)
     endif()
-endmacro(demo1)
+endmacro(test1)
 
 # 项目列表，根据配置参数ITEM选择: $ cmake -DITEM=x;
 macro(item_list type)
-    if(ITEM STREQUAL "demo1")
-        demo1(${type})                          # 加载项目`demo1`配置
+    if(ITEM STREQUAL "build/test1")
+        test1(${type})
     else()
         message(FATAL_ERROR "No such ITEM in `CMakeLists.txt`: ${ITEM}")
     endif()
