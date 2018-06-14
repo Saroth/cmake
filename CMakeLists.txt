@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.6)             # 最低CMake版本
 
 ###############################################################################
 #### Default configuration {                    #### 工程通用配置选项
-set(name_project    "TEST_QT")           # 工程名
-set(name_target     "test")                 # 目标名
+set(name_project    "IMGANA")               # 工程名
+set(name_target     "imgana")                 # 目标名
 
 set(dir_sources     "${CMAKE_CURRENT_SOURCE_DIR}/../src/") # 源路径
 set(dir_outputs     "${CMAKE_CURRENT_SOURCE_DIR}/../${ITEM}/") # 目标路径
@@ -23,7 +23,9 @@ set(source_filter   )                           # 源文件过滤，支持通配
 #### Items configuration {    #### 各项目配置选项，可对通用配置进行重定义或补充
 macro(test1 type)
     if(${type} STREQUAL "config")
-        set(name_target "test1")
+        set(name_target "imgana")
+        set(dir_sources "${CMAKE_CURRENT_SOURCE_DIR}/../qt/"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../core/")
         # set(CMAKE_INCLUDE_CURRENT_DIR ON)
         set(CMAKE_AUTOMOC ON)       # Necessary!
     elseif(${type} STREQUAL "target")
@@ -35,6 +37,8 @@ macro(test1 type)
         #   Local setting is: /usr/lib64/cmake
         #   See: http://doc.qt.io/qt-5/cmake-manual.html#getting-started
         find_package(Qt5 REQUIRED Widgets Core Gui)
+        # qt5_wrap_cpp(GUI_MOC ../gui/main_window.h)
+        # add_executable(${name_target} ${SRC_FILES} ${GUI_MOC})
         add_executable(${name_target} ${SRC_FILES})
         target_link_libraries(${name_target} Qt5::Widgets Qt5::Core Qt5::Gui)
     endif()
@@ -42,7 +46,7 @@ endmacro(test1)
 
 # 项目列表，根据配置参数ITEM选择: $ cmake -DITEM=x;
 macro(item_list type)
-    if(ITEM STREQUAL "build/test1")
+    if(ITEM STREQUAL "build/imgana")
         test1(${type})
     else()
         message(FATAL_ERROR "No such ITEM in `CMakeLists.txt`: ${ITEM}")
