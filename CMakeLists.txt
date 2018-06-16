@@ -35,6 +35,10 @@ macro(test1 type)
         #   Local setting is: /usr/lib64/cmake
         #   See: http://doc.qt.io/qt-5/cmake-manual.html#getting-started
         find_package(Qt5 REQUIRED Widgets Core Gui)
+
+        # qt5_wrap_cpp(test_MOC ../src/main_window.h ../src/page.h)
+        # add_executable(${name_target} ${SRC_FILES} ${test_MOC})
+
         add_executable(${name_target} ${SRC_FILES})
         target_link_libraries(${name_target} Qt5::Widgets Qt5::Core Qt5::Gui)
     endif()
