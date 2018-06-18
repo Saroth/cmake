@@ -21,7 +21,7 @@ set(source_filter   )                           # 源文件过滤，支持通配
 
 ###############################################################################}
 #### Items configuration {    #### 各项目配置选项，可对通用配置进行重定义或补充
-macro(test1 type)
+macro(imgana type)
     if(${type} STREQUAL "config")
         set(name_target "imgana")
         set(dir_sources "${CMAKE_CURRENT_SOURCE_DIR}/../qt/"
@@ -38,8 +38,6 @@ macro(test1 type)
         #   Local setting is: /usr/lib64/cmake
         #   See: http://doc.qt.io/qt-5/cmake-manual.html#getting-started
         find_package(Qt5 REQUIRED Widgets Core Gui)
-        # qt5_wrap_cpp(GUI_MOC ../gui/main_window.h)
-        # add_executable(${name_target} ${SRC_FILES} ${GUI_MOC})
         add_executable(${name_target} ${SRC_FILES})
         target_link_libraries(${name_target} Qt5::Widgets Qt5::Core Qt5::Gui)
         add_custom_command(
@@ -49,13 +47,35 @@ macro(test1 type)
                     ${CMAKE_CURRENT_SOURCE_DIR}/../test/${name_target}
             COMMENT "copy target for test."
             )
+        # qt5_wrap_cpp(GUI_MOC ../gui/main_window.h)
+        # add_executable(${name_target} ${SRC_FILES} ${GUI_MOC})
     endif()
-endmacro(test1)
+endmacro(imgana)
+
+macro(analyzer_demo type)
+    if(${type} STREQUAL "config")
+        set(name_target "analyzer_demo")
+        set(dir_sources "${CMAKE_CURRENT_SOURCE_DIR}/../analyzer_demo/")
+        set(dir_includes
+            "${CMAKE_CURRENT_SOURCE_DIR}/../analyzer_demo/include/")
+    elseif(${type} STREQUAL "target")
+        add_library(${name_target} SHARED ${SRC_FILES})
+        add_custom_command(
+            POST_BUILD
+            TARGET  ${name_target}
+            COMMAND cp ${dir_outputs}lib${name_target}.so
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../test/lib${name_target}.so
+            COMMENT "copy library for test."
+            )
+    endif()
+endmacro(analyzer_demo)
 
 # 项目列表，根据配置参数ITEM选择: $ cmake -DITEM=x;
 macro(item_list type)
     if(ITEM STREQUAL "build/imgana")
-        test1(${type})
+        imgana(${type})
+    elseif(ITEM STREQUAL "build/analyzer_demo")
+        analyzer_demo(${type})
     else()
         message(FATAL_ERROR "No such ITEM in `CMakeLists.txt`: ${ITEM}")
     endif()
