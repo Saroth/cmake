@@ -42,6 +42,13 @@ macro(test1 type)
         # add_executable(${name_target} ${SRC_FILES} ${GUI_MOC})
         add_executable(${name_target} ${SRC_FILES})
         target_link_libraries(${name_target} Qt5::Widgets Qt5::Core Qt5::Gui)
+        add_custom_command(
+            POST_BUILD
+            TARGET  ${name_target}
+            COMMAND cp ${dir_outputs}${name_target}
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../test/${name_target}
+            COMMENT "copy target for test."
+            )
     endif()
 endmacro(test1)
 
