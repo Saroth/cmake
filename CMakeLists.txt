@@ -26,7 +26,9 @@ macro(imgana type)
         set(name_target "imgana")
         set(dir_sources "${CMAKE_CURRENT_SOURCE_DIR}/../qt/"
             "${CMAKE_CURRENT_SOURCE_DIR}/../core/")
-        set(dir_includes "${CMAKE_CURRENT_SOURCE_DIR}/../core/")
+        set(dir_includes "${CMAKE_CURRENT_SOURCE_DIR}/../core/"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../analyzer_demo/include/")
+        set(compiler_opts "${compiler_opts} -rdynamic -ldl")
         # set(CMAKE_INCLUDE_CURRENT_DIR ON)
         set(CMAKE_AUTOMOC ON)       # Necessary!
     elseif(${type} STREQUAL "target")
