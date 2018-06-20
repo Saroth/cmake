@@ -41,7 +41,7 @@ macro(imgana type)
         #   See: http://doc.qt.io/qt-5/cmake-manual.html#getting-started
         find_package(Qt5 REQUIRED Widgets Core Gui)
         add_executable(${name_target} ${SRC_FILES})
-        target_link_libraries(${name_target} Qt5::Widgets Qt5::Core Qt5::Gui)
+        target_link_libraries(${name_target} dl Qt5::Widgets Qt5::Core Qt5::Gui)
         add_custom_command(
             POST_BUILD
             TARGET  ${name_target}
