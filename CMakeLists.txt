@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.6)             # 最低CMake版本
 
 ###############################################################################
 #### Default configuration {                    #### 工程通用配置选项
-set(name_project    "IMGANA")               # 工程名
-set(name_target     "imgana")                 # 目标名
+set(name_project    "QREC")                     # 工程名
+set(name_target     "qrec")                     # 目标名
 
 set(dir_sources     "${CMAKE_CURRENT_SOURCE_DIR}/../src/") # 源路径
 set(dir_outputs     "${CMAKE_CURRENT_SOURCE_DIR}/../${ITEM}/") # 目标路径
@@ -21,63 +21,34 @@ set(source_filter   )                           # 源文件过滤，支持通配
 
 ###############################################################################}
 #### Items configuration {    #### 各项目配置选项，可对通用配置进行重定义或补充
-macro(imgana type)
+macro(qrec type)
     if(${type} STREQUAL "config")
-        set(name_target "imgana")
-        set(dir_sources "${CMAKE_CURRENT_SOURCE_DIR}/../qt/"
-            "${CMAKE_CURRENT_SOURCE_DIR}/../core/")
-        set(dir_includes "${CMAKE_CURRENT_SOURCE_DIR}/../core/"
-            "${CMAKE_CURRENT_SOURCE_DIR}/../analyzer_demo/include/")
-        set(compiler_opts "${compiler_opts} -rdynamic -ldl")
-        # set(CMAKE_INCLUDE_CURRENT_DIR ON)
-        set(CMAKE_AUTOMOC ON)       # Necessary!
+        set(name_target "qrec")
     elseif(${type} STREQUAL "target")
-        # DON'T call FIND_* modules before setting a name to PROJECT.
-        #   See: https://cmake.org/Bug/view.php?id=15999
-        # In order for find_package to be successful, Qt 5 must be found below
-        # the CMAKE_PREFIX_PATH, or the Qt5<Module>_DIR must be set in the
-        # CMake cache to the location of the Qt5WidgetsConfig.cmake file.
-        #   Local setting is: /usr/lib64/cmake
-        #   See: http://doc.qt.io/qt-5/cmake-manual.html#getting-started
-        find_package(Qt5 REQUIRED Widgets Core Gui)
-        add_executable(${name_target} ${SRC_FILES})
-        target_link_libraries(${name_target} dl Qt5::Widgets Qt5::Core Qt5::Gui)
-        add_custom_command(
-            POST_BUILD
-            TARGET  ${name_target}
-            COMMAND cp ${dir_outputs}${name_target}
-                    ${CMAKE_CURRENT_SOURCE_DIR}/../test/${name_target}
-            COMMENT "copy target for test."
-            )
-        # qt5_wrap_cpp(GUI_MOC ../gui/main_window.h)
-        # add_executable(${name_target} ${SRC_FILES} ${GUI_MOC})
+        add_library(${name_target} SHARED ${SRC_FILES})
     endif()
-endmacro(imgana)
-
-macro(analyzer_demo type)
+endmacro(qrec)
+macro(qrec_for_imgana type)
     if(${type} STREQUAL "config")
-        set(name_target "analyzer_demo")
-        set(dir_sources "${CMAKE_CURRENT_SOURCE_DIR}/../analyzer_demo/")
-        set(dir_includes
-            "${CMAKE_CURRENT_SOURCE_DIR}/../analyzer_demo/include/")
+        set(name_target "qrec")
     elseif(${type} STREQUAL "target")
         add_library(${name_target} SHARED ${SRC_FILES})
         add_custom_command(
             POST_BUILD
             TARGET  ${name_target}
             COMMAND cp ${dir_outputs}lib${name_target}.so
-                    ${CMAKE_CURRENT_SOURCE_DIR}/../test/lib${name_target}.so
-            COMMENT "copy library for test."
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../../test_imgana/lib${name_target}.so
+            COMMENT "copy library for external test."
             )
     endif()
-endmacro(analyzer_demo)
+endmacro(qrec_for_imgana)
 
 # 项目列表，根据配置参数ITEM选择: $ cmake -DITEM=x;
 macro(item_list type)
-    if(ITEM STREQUAL "build/imgana")
-        imgana(${type})
-    elseif(ITEM STREQUAL "build/analyzer_demo")
-        analyzer_demo(${type})
+    if(ITEM STREQUAL "build/qrec")
+        qrec(${type})
+    elseif(ITEM STREQUAL "build/qrec_for_imgana")
+        qrec_for_imgana(${type})
     else()
         message(FATAL_ERROR "No such ITEM in `CMakeLists.txt`: ${ITEM}")
     endif()
