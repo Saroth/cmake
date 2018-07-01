@@ -28,6 +28,7 @@ macro(imgana type)
             "${CMAKE_CURRENT_SOURCE_DIR}/../core/")
         set(dir_includes "${CMAKE_CURRENT_SOURCE_DIR}/../core/"
             "${CMAKE_CURRENT_SOURCE_DIR}/../analyzer_demo/include/")
+        set(compiler_defs "-DLIBRARY_FILE=\"libanalyzer_demo.so\"")
         set(compiler_opts "${compiler_opts} -rdynamic -ldl")
         # set(CMAKE_INCLUDE_CURRENT_DIR ON)
         set(CMAKE_AUTOMOC ON)       # Necessary!
@@ -54,6 +55,31 @@ macro(imgana type)
     endif()
 endmacro(imgana)
 
+macro(imgana_for_qrec type)
+    if(${type} STREQUAL "config")
+        set(name_target "imgana")
+        set(dir_sources "${CMAKE_CURRENT_SOURCE_DIR}/../qt/"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../core/")
+        set(dir_includes "${CMAKE_CURRENT_SOURCE_DIR}/../core/"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../analyzer_demo/include/")
+        set(compiler_defs "-DLIBRARY_FILE=\"libqrec.so\"")
+        set(compiler_opts "${compiler_opts} -rdynamic -ldl")
+        # set(CMAKE_INCLUDE_CURRENT_DIR ON)
+        set(CMAKE_AUTOMOC ON)       # Necessary!
+    elseif(${type} STREQUAL "target")
+        find_package(Qt5 REQUIRED Widgets Core Gui)
+        add_executable(${name_target} ${SRC_FILES})
+        target_link_libraries(${name_target} dl Qt5::Widgets Qt5::Core Qt5::Gui)
+        add_custom_command(
+            POST_BUILD
+            TARGET  ${name_target}
+            COMMAND cp ${dir_outputs}${name_target}
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../../test_imgana/${name_target}
+            COMMENT "copy target for external test."
+            )
+    endif()
+endmacro(imgana_for_qrec)
+
 macro(analyzer_demo type)
     if(${type} STREQUAL "config")
         set(name_target "analyzer_demo")
@@ -76,6 +102,8 @@ endmacro(analyzer_demo)
 macro(item_list type)
     if(ITEM STREQUAL "build/imgana")
         imgana(${type})
+    elseif(ITEM STREQUAL "build/imgana_for_qrec")
+        imgana_for_qrec(${type})
     elseif(ITEM STREQUAL "build/analyzer_demo")
         analyzer_demo(${type})
     else()
