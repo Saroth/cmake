@@ -24,6 +24,10 @@ set(source_filter   )                           # 源文件过滤，支持通配
 macro(qrec type)
     if(${type} STREQUAL "config")
         set(name_target "qrec")
+        set(dir_sources "${CMAKE_CURRENT_SOURCE_DIR}/../src/"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../sdb/")
+        set(dir_includes "${CMAKE_CURRENT_SOURCE_DIR}/../inc/"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../sdb/")
     elseif(${type} STREQUAL "target")
         add_library(${name_target} SHARED ${SRC_FILES})
     endif()
@@ -31,6 +35,10 @@ endmacro(qrec)
 macro(qrec_for_imgana type)
     if(${type} STREQUAL "config")
         set(name_target "qrec")
+        set(dir_sources "${CMAKE_CURRENT_SOURCE_DIR}/../src/"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../sdb/")
+        set(dir_includes "${CMAKE_CURRENT_SOURCE_DIR}/../inc/"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../sdb/")
     elseif(${type} STREQUAL "target")
         add_library(${name_target} SHARED ${SRC_FILES})
         add_custom_command(
