@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.6)             # 最低CMake版本
 
 ###############################################################################
 #### Default configuration {                    #### 工程通用配置选项
-set(name_project    "CMAKE_TEMPLATE")           # 工程名
-set(name_target     "template")                 # 目标名
+set(name_project    "__CMAKE_TEMPLATE__")       # 工程名
+set(name_target     "__demo__")                # 目标名
 
 set(dir_sources     "${CMAKE_CURRENT_SOURCE_DIR}/../src/") # 源路径
 set(dir_outputs     "${CMAKE_CURRENT_SOURCE_DIR}/../${ITEM}/") # 目标路径
@@ -21,18 +21,18 @@ set(source_filter   )                           # 源文件过滤，支持通配
 
 ###############################################################################}
 #### Items configuration {    #### 各项目配置选项，可对通用配置进行重定义或补充
-macro(demo1 type)                               # 模板项目`demo1`配置
+macro(__item_demo__ type)
     if(${type} STREQUAL "config")
-        set(name_target "temp_item_1")
+        set(name_target "__item_target__")
     elseif(${type} STREQUAL "target")
         add_executable(${name_target} ${SRC_FILES})
     endif()
-endmacro(demo1)
+endmacro(__item_demo__)
 
 # 项目列表，根据配置参数ITEM选择: $ cmake -DITEM=x;
 macro(item_list type)
-    if(ITEM STREQUAL "demo1")
-        demo1(${type})                          # 加载项目`demo1`配置
+    if(ITEM STREQUAL "__item_demo__")
+        __item_demo__(${type})
     else()
         message(FATAL_ERROR "No such ITEM in `CMakeLists.txt`: ${ITEM}")
     endif()
